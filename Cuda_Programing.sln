@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cuda_Programing", "Cuda_Programing\Cuda_Programing.vcxproj", "{07200897-F1A3-4572-8797-23D8CC480407}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "APlusB", "APlusB\APlusB.vcxproj", "{E5F6545E-B02C-41B5-91EC-CCA42A884362}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Hamming", "Hamming\Hamming.vcxproj", "{7E5D567D-857B-43EC-BFD4-8C340B3ACE64}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{07200897-F1A3-4572-8797-23D8CC480407}.Debug|x64.ActiveCfg = Debug|x64
+		{07200897-F1A3-4572-8797-23D8CC480407}.Debug|x64.Build.0 = Debug|x64
+		{07200897-F1A3-4572-8797-23D8CC480407}.Release|x64.ActiveCfg = Release|x64
+		{07200897-F1A3-4572-8797-23D8CC480407}.Release|x64.Build.0 = Release|x64
+		{E5F6545E-B02C-41B5-91EC-CCA42A884362}.Debug|x64.ActiveCfg = Debug|x64
+		{E5F6545E-B02C-41B5-91EC-CCA42A884362}.Debug|x64.Build.0 = Debug|x64
+		{E5F6545E-B02C-41B5-91EC-CCA42A884362}.Release|x64.ActiveCfg = Release|x64
+		{E5F6545E-B02C-41B5-91EC-CCA42A884362}.Release|x64.Build.0 = Release|x64
+		{7E5D567D-857B-43EC-BFD4-8C340B3ACE64}.Debug|x64.ActiveCfg = Debug|x64
+		{7E5D567D-857B-43EC-BFD4-8C340B3ACE64}.Debug|x64.Build.0 = Debug|x64
+		{7E5D567D-857B-43EC-BFD4-8C340B3ACE64}.Release|x64.ActiveCfg = Release|x64
+		{7E5D567D-857B-43EC-BFD4-8C340B3ACE64}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
