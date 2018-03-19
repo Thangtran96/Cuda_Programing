@@ -3,25 +3,7 @@
 #include "device_launch_parameters.h"
 
 #include <stdio.h>
-#include <iostream>
-#include <fstream>
-#include <string>
-using namespace std;
-ifstream fi("Data.txt");
-ofstream fo("Ans.txt");
 
-string DataInp[100];
-
-void ReadFileData()
-{
-	int temp; string s;
-	fi >> temp; cout << temp;
-	for (int i = 0; i < temp; ++i) {
-		//if (i % 2 == 0) continue;
-		fi >> s;
-		DataInp[i] = s;
-	}
-}
 cudaError_t addWithCuda(int *c, const int *a, const int *b, unsigned int size);
 
 __global__ void addKernel(int *c, const int *a, const int *b)
