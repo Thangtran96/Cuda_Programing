@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Hamming", "Hamming\Hamming.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PatternBranching", "PatternBranching\PatternBranching.vcxproj", "{F238C6FB-12BA-45CE-990F-0049673ED41D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcxproj", "{A720CC6B-E825-4DC4-94A3-05BEF78E2DFF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -33,6 +35,10 @@ Global
 		{F238C6FB-12BA-45CE-990F-0049673ED41D}.Debug|x64.Build.0 = Debug|x64
 		{F238C6FB-12BA-45CE-990F-0049673ED41D}.Release|x64.ActiveCfg = Release|x64
 		{F238C6FB-12BA-45CE-990F-0049673ED41D}.Release|x64.Build.0 = Release|x64
+		{A720CC6B-E825-4DC4-94A3-05BEF78E2DFF}.Debug|x64.ActiveCfg = Debug|x64
+		{A720CC6B-E825-4DC4-94A3-05BEF78E2DFF}.Debug|x64.Build.0 = Debug|x64
+		{A720CC6B-E825-4DC4-94A3-05BEF78E2DFF}.Release|x64.ActiveCfg = Release|x64
+		{A720CC6B-E825-4DC4-94A3-05BEF78E2DFF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

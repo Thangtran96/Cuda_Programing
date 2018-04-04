@@ -12,26 +12,49 @@ ifstream fi("Data.txt");
 ofstream fo("Ans.txt");
 
 string DataInp[35];
+vector<string> h_motif_find;
+vector<string> h_motif_dis_H;
 
 typedef pair <int, string> pis;
 typedef vector < pis > vpis;
 string dataMotif[35];
 int l, d;
+
+//device memory;
+vector<string> d_motif_find;
+vector<string> d_motif_dis_H;
 __device__ vpis dataAns;
 
 void ReadFileData()
 {
-	int temp; string s;
-	fi >> temp; //cout << temp;
-	for (int i = 1; i < 21; ++i) {
-		//if (i % 2 == 0) continue;
-		fi >> s;
-		DataInp[i] = s;
+	fi >> l >> d;
+	fi.ignore();
+	for (int i = 0; i < 20; ++i) {
+		getline(fi, dataMotif[i]);
 	}
 }
 
 void OutFileAns(string s[100], int x) {
 	for (int i = 0; i < x; i++) fo << ">Sequence" << i << endl << s[i] << endl ;
+}
+
+void init_motif()
+{
+	string tmp;
+	for (int i = 0; i < 20; ++i)
+	{
+		tmp = dataMotif[i];
+		for (int j = 0; j < tmp.size() - l; ++j)
+		{
+			if (i == 0) {
+				h_motif_find.push_back(tmp.substr(j, l) );
+				h_motif_dis_H.push_back(tmp.substr(j, l));
+			}
+			else {
+				h_motif_dis_H.push_back(tmp.substr(j, l));
+			}
+		}
+	}
 }
 
 //int Haming(string s1, string s2) {
@@ -46,36 +69,26 @@ void OutFileAns(string s[100], int x) {
 __device__ int min_dis_ham;
 __global__ string d_data[35];
 
-__global__ void dis_haming(string *s) {
+__global__ void score_haming(string *s1, string *s2) {
+
+}
+
+__global__ void dis_haming(string *s, string *d_data) {
 	int res_Sum = 0, temp_score = 999;
-	for (int i = 1; i<=20; ++i)
-	{
-		string s1 = d_data[i];
-		temp_score = 999;
-		for (int j = 0; j < s1.size() - l + 1; ++j)
-		{
-			string temp_str = s1.substr(j, l);
-			int score_lmer = 0;
-			for (int k = 0; i < temp_str.size(); ++i) {
-				if (s[i] != temp_str[i]) score_lmer++;
-			}
-			temp_score = score_lmer
-		}
-		res_Sum += temp_score;
-	}
-	min_dis_ham = res_Sum;
-}
-
-__global__ void paternbracnching( const int *l, const int *d)
-{
 	int index = blockIdx.x * blockDim.x + threadIdx.x;
-	int size_str = d_data[1].size();
-	if (index < size_str - l)
-	{
-		string motif_f = d_data[1][index];
 
-	}
 }
+
+//__global__ void paternbracnching( const int *l, const int *d)
+//{
+//	int index = blockIdx.x * blockDim.x + threadIdx.x;
+//	int size_str = d_data[1].size();
+//	if (index < size_str - l)
+//	{
+//		string motif_f = d_data[1][index];
+//
+//	}
+//}
 
 int main()
 {
@@ -106,6 +119,9 @@ int main()
 	{
 		cout << motifVector[it] << endl;
 	}*/
+
+	init_motif();
+
     return 0;
 }
 
