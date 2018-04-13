@@ -11,12 +11,16 @@ ifstream fi("Data.txt");
 ofstream fo("Ans.txt");
 string s1, s2;
 int ans = 0;
+//
+//__device__ int* d_arrayA;
+//int* h_arrayA;
 
 __global__ void cube(float * d_out, float * d_in) {
 	// Todo: Fill in this function
 	int idx = threadIdx.x;
 	float f = d_in[idx];
 	d_out[idx] = f * f * f;
+	//d_arrayA[idx] = f * f * f;
 }
 
 int main(void) {
@@ -72,6 +76,15 @@ int main(void) {
 		printf(((i % 4) != 3) ? "\t" : "\n");
 	}
 
+	/*cudaMalloc(&h_arrayA, 12000 * sizeof(int));
+	if ( cudaMemcpyToSymbol(d_arrayA, &h_arrayA, sizeof(h_arrayA) ) == cudaSuccess ) {
+		cout << " copy du lieu thanh cong" << endl;
+	}
+	if (cudaMemcpyFromSymbol(&h_arrayA, d_arrayA, sizeof(h_arrayA)) == cudaSuccess) {
+		cout << " copy du lieu thanh cong" << endl;
+	}
+	cout << &h_arrayA << endl;
+	cudaFree(d_arrayA);*/
 	cudaFree(d_in);
 	cudaFree(d_out);
 
