@@ -14,9 +14,8 @@ const int ARRAY_SIZE = 12005;
 const int ARRAY_BYTES_INT = ARRAY_SIZE * sizeof(int);
 
 typedef struct {
-	int dis;
-	int* motif;
-	int* pos;
+	int dis;// dis_Haming
+	int* motif;//str_motif[40]
 }ans_motif;
 
 //Host memory
@@ -79,112 +78,193 @@ __device__ int dis_haming(const int* d_datainp, const int* s1, const int l) {
 }
 
 //code best nay
-__device__ int bestNeighbor(const int* d_datainp, int* s1, const int l) {
-	int temp_val;
-	int temp_dis;
-	int best_dis=99999;
-	int motif[40];
-	int ans = 0;
-	printf("\nbestNeighbor\n");
-	for (int i = 0; i < l; ++i) {
-		//trg hop 0
-		if (s1[i] != 0) {
-			temp_val = s1[i];
-			s1[i] = 0;
-			temp_dis = dis_haming(d_datainp, s1, l);
-			s1[i] = temp_val;
-			//lay best neighbor
-			if (temp_dis < best_dis)
-			{
-				best_dis = temp_dis;
-				for (int j = 0; j < l; ++j) {
-					motif[j] = s1[j];
-				}
-			}
-		}
-		//trg hop 1
-		if (s1[i] != 1) {
-			temp_val = s1[i];
-			s1[i] = 1;
-			temp_dis = dis_haming(d_datainp, s1, l);
-			s1[i] = temp_val;
-			//lay best neighbor
-			if (temp_dis < best_dis)
-			{
-				best_dis = temp_dis;
-				for (int j = 0; j < l; ++j) {
-					motif[j] = s1[j];
-				}
-			}
-		}
-		//trg hop 2
-		if (s1[i] != 2) {
-			temp_val = s1[i];
-			s1[i] = 2;
-			temp_dis = dis_haming(d_datainp, s1, l);
-			s1[i] = temp_val;
-			//lay best neighbor
-			if (temp_dis < best_dis)
-			{
-				best_dis = temp_dis;
-				for (int j = 0; j < l; ++j) {
-					motif[j] = s1[j];
-				}
-			}
-		}
-		//trg hop 3
-		if (s1[i] != 3) {
-			temp_val = s1[i];
-			s1[i] = 3;
-			temp_dis = dis_haming(d_datainp, s1, l);
-			s1[i] = temp_val;
-			//lay best neighbor
-			if (temp_dis < best_dis)
-			{
-				best_dis = temp_dis;
-				for (int j = 0; j < l; ++j) {
-					motif[j] = s1[j];
-				}
-			}
-		}
-	}
-	// chuan bi trc khi tra kq
-	int k = 0;
-	for (int i = 0; i < l; ++i) {
-		ans = ans ^ (motif[i] << k);
-		k += 2;
-	}
-	return ans;
-	printf("ans %d \n", ans);
-}
+//__device__ int bestNeighbor(const int* d_datainp, int* s1, const int l) {
+//	int temp_val;
+//	int temp_dis;
+//	int best_dis = 99999;
+//	int motif[40];
+//	int ans = 0;
+//	printf("\nbestNeighbor\n");
+//	for (int i = 0; i < l; ++i) {
+//		//trg hop 0
+//		if (s1[i] != 0) {
+//			temp_val = s1[i];
+//			s1[i] = 0;
+//			temp_dis = dis_haming(d_datainp, s1, l);
+//			s1[i] = temp_val;
+//			//lay best neighbor
+//			if (temp_dis < best_dis)
+//			{
+//				best_dis = temp_dis;
+//				for (int j = 0; j < l; ++j) {
+//					motif[j] = s1[j];
+//				}
+//			}
+//		}
+//		//trg hop 1
+//		if (s1[i] != 1) {
+//			temp_val = s1[i];
+//			s1[i] = 1;
+//			temp_dis = dis_haming(d_datainp, s1, l);
+//			s1[i] = temp_val;
+//			//lay best neighbor
+//			if (temp_dis < best_dis)
+//			{
+//				best_dis = temp_dis;
+//				for (int j = 0; j < l; ++j) {
+//					motif[j] = s1[j];
+//				}
+//			}
+//		}
+//		//trg hop 2
+//		if (s1[i] != 2) {
+//			temp_val = s1[i];
+//			s1[i] = 2;
+//			temp_dis = dis_haming(d_datainp, s1, l);
+//			s1[i] = temp_val;
+//			//lay best neighbor
+//			if (temp_dis < best_dis)
+//			{
+//				best_dis = temp_dis;
+//				for (int j = 0; j < l; ++j) {
+//					motif[j] = s1[j];
+//				}
+//			}
+//		}
+//		//trg hop 3
+//		if (s1[i] != 3) {
+//			temp_val = s1[i];
+//			s1[i] = 3;
+//			temp_dis = dis_haming(d_datainp, s1, l);
+//			s1[i] = temp_val;
+//			//lay best neighbor
+//			if (temp_dis < best_dis)
+//			{
+//				best_dis = temp_dis;
+//				for (int j = 0; j < l; ++j) {
+//					motif[j] = s1[j];
+//				}
+//			}
+//		}
+//	}
+//	// chuan bi trc khi tra kq
+//	int k = 0;
+//	for (int i = 0; i < l; ++i) {
+//		ans = ans ^ (motif[i] << k);
+//		k += 2;
+//	}
+//	return ans;
+//	printf("ans %d \n", ans);
+//}
 
 //code ham chinh goi
 __global__ void patternBarching(const int* d_datainp, const int l, const int d) {
 	int index = blockDim.x * blockIdx.x + threadIdx.x;
-	int ans = 0;
-	test.dis = 2;
-	printf("\n thread chay %d %d %d", index, l, d);
 	if (index < 600 - l) {
-		int motif[40];
-		for (int i = 0; i < l; ++i) {
-			motif[i] = d_datainp[index + i];
-		}
-		printf("gia tri 1 trong %d \n", d_datainp[1]);
-		ans = dis_haming(d_datainp, motif, l);
-		printf("dis motif %d \n", ans);
+		//khai bao bien
+		int motif_temp[40];
+		int temp_val;
+		int temp_dis;
+		int best_dis = 99999;
+		int motif_bN[40];
+		int score_motif;
 		
-		int ans_neighbor = bestNeighbor(d_datainp, motif, l);
-		printf("best neighbor %d \n", ans_neighbor);
-		int motifN[40];
-		int x=0,k=0;
+		//lay chuoi can duyet
 		for (int i = 0; i < l; ++i) {
-			x = 3 << k;
-			if (x & ans_neighbor == 0) { motifN[i] = 0; k += 2; printf("%d ", motifN[i]); continue; }
-			if (x & ans_neighbor == 1) { motifN[i] = 1; k += 2; printf("%d ", motifN[i]); continue; }
-			if (x & ans_neighbor == 2) { motifN[i] = 2; k += 2; printf("%d ", motifN[i]); continue; }
-			if (x & ans_neighbor == 3) { motifN[i] = 3; k += 2; printf("%d ", motifN[i]); continue; }
+			motif_temp[i] = d_datainp[i + index];
 		}
-		printf("\n");
+		score_motif = dis_haming(d_datainp, motif_temp, l);
+
+		for (int k = 0; k < d; ++k) {
+			//kiem tra chuoi tot
+			if (best_dis < score_motif) {
+				score_motif = best_dis;
+				for (int i = 0; i < l; ++i) {
+					motif_temp[i] = motif_bN[i];
+				}
+			}
+			//ham bestNeighbor
+			printf("\nbestNeighbor\n");
+			for (int i = 0; i < l; ++i) {
+				//trg hop 0
+				if (motif_temp[i] != 0) {
+					temp_val = motif_temp[i];
+					motif_temp[i] = 0;
+					temp_dis = dis_haming(d_datainp, motif_temp, l);
+					//lay best neighbor
+					if (temp_dis < best_dis)
+					{
+						best_dis = temp_dis;
+						for (int j = 0; j < l; ++j) {
+							motif_bN[j] = motif_temp[j];
+						}
+					}
+					motif_temp[i] = temp_val;
+				}
+				//trg hop 1
+				if (motif_temp[i] != 1) {
+					temp_val = motif_temp[i];
+					motif_temp[i] = 1;
+					temp_dis = dis_haming(d_datainp, motif_temp, l);
+					//lay best neighbor
+					if (temp_dis < best_dis)
+					{
+						best_dis = temp_dis;
+						for (int j = 0; j < l; ++j) {
+							motif_bN[j] = motif_temp[j];
+						}
+					}
+					motif_temp[i] = temp_val;
+				}
+				//trg hop 2
+				if (motif_temp[i] != 2) {
+					temp_val = motif_temp[i];
+					motif_temp[i] = 2;
+					temp_dis = dis_haming(d_datainp, motif_temp, l);
+					//lay best neighbor
+					if (temp_dis < best_dis)
+					{
+						best_dis = temp_dis;
+						for (int j = 0; j < l; ++j) {
+							motif_bN[j] = motif_temp[j];
+						}
+					}
+					motif_temp[i] = temp_val;
+				}
+				//trg hop 3
+				if (motif_temp[i] != 3) {
+					temp_val = motif_temp[i];
+					motif_temp[i] = 3;
+					temp_dis = dis_haming(d_datainp, motif_temp, l);
+					//lay best neighbor
+					if (temp_dis < best_dis)
+					{
+						best_dis = temp_dis;
+						for (int j = 0; j < l; ++j) {
+							motif_bN[j] = motif_temp[j];
+						}
+					}
+					motif_temp[i] = temp_val;
+				}
+			}
+			// END ham bestNeighbor
+		}
+
+		
+
+		/*for (int k = 0; k <= d; k++)
+		{
+			i_temp = dis_hamming(a);
+			fo << i_temp << " " << bestScore << endl;
+			if (i_temp < bestScore)
+			{
+				cout << "Change ";
+				cout << a << " " << i_temp << " || ";
+				f = a;
+				bestScore = i_temp;
+			}
+			a = bestNeighbor(a);
+		}*/
 	}
 }
 
@@ -192,12 +272,15 @@ __global__ void patternBarching(const int* d_datainp, const int l, const int d) 
 int main() {
 	File_Input();
 	cout << h_dataMotif[1];
+	//khai bao gpu
 	int* d_datainp;
 	if (cudaMalloc(&d_datainp, ARRAY_BYTES_INT) == cudaSuccess)
 		cout << "\n Khai bao thanh cong\n";
 	if (cudaMemcpy(d_datainp, h_dataMotif, ARRAY_BYTES_INT, cudaMemcpyHostToDevice) == cudaSuccess)
 		cout << "\n copy thanh cong\n";
+	ans_motif* d_motif;
 
+	//chay gpu
 	patternBarching << < 1, 1 >> > (d_datainp, l, d);
 	//cudaMemcpy(h_datainp, d_datainp, ARRAY_BYTES, cudaMemcpyDeviceToHost);
 	cudaFree(d_datainp);
