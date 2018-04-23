@@ -12,18 +12,22 @@
 using namespace std;
 const int ARRAY_SIZE = 12005;
 const int ARRAY_BYTES_INT = ARRAY_SIZE * sizeof(int);
+const int ARRAY_SIZE_MOTIF = 601;
+const int ARRAY_BYTES_MOTIF = ARRAY_SIZE_MOTIF * ( sizeof(int) + ( 40 * sizeof(int) ) );
 
 typedef struct {
 	int dis;// dis_Haming
 	int* motif;//str_motif[40]
-}ans_motif;
+}MOTIF;
 
 //Host memory
 int l, d;
-int h_dataMotif[ARRAY_SIZE];
+int h_dataMotif[12005];
+int* d_datainp;
+MOTIF h_motif[602];
+MOTIF* d_motif;
 
 //device memory
-__device__ ans_motif test;
 
 //nhap tu file va chuyen sang kieu int
 void File_Input()
@@ -158,7 +162,7 @@ __device__ int dis_haming(const int* d_datainp, const int* s1, const int l) {
 //}
 
 //code ham chinh goi
-__global__ void patternBarching(const int* d_datainp, const int l, const int d) {
+__global__ void patternBarching(const int* d_datainp, const int l, const int d, MOTIF* d_motif) {
 	int index = blockDim.x * blockIdx.x + threadIdx.x;
 	if (index < 600 - l) {
 		//khai bao bien
@@ -172,11 +176,32 @@ __global__ void patternBarching(const int* d_datainp, const int l, const int d) 
 		//lay chuoi can duyet
 		for (int i = 0; i < l; ++i) {
 			motif_temp[i] = d_datainp[i + index];
+			motif_bN[i] = motif_temp[i];
 		}
+		printf("\n 1 \n");
 		score_motif = dis_haming(d_datainp, motif_temp, l);
+		//ham dis_hamming
+		//int ans = 0;
+		//int temp, tempRow;
+		//for (int i = 0; i < 20; ++i)
+		//{
+		//	tempRow = 999;
+		//	for (int j = i * 600; j < (i + 1) * 600 - l; ++j)
+		//	{
+		//		temp = 0;
+		//		for (int k = 0; k < l; k++) {
+		//			if (s1[k] != d_datainp[k + j]) temp++;
+		//		}
+		//		if (temp < tempRow) tempRow = temp;
+		//	}
+		//	ans += tempRow;
+		//}
+		//printf("device code %d", ans);
 
+		//chay ham patternBarching
 		for (int k = 0; k < d; ++k) {
 			//kiem tra chuoi tot
+			printf("\n 2 \n");
 			if (best_dis < score_motif) {
 				score_motif = best_dis;
 				for (int i = 0; i < l; ++i) {
@@ -186,6 +211,7 @@ __global__ void patternBarching(const int* d_datainp, const int l, const int d) 
 			//ham bestNeighbor
 			printf("\nbestNeighbor\n");
 			for (int i = 0; i < l; ++i) {
+				printf("\n 3 \n");
 				//trg hop 0
 				if (motif_temp[i] != 0) {
 					temp_val = motif_temp[i];
@@ -249,8 +275,14 @@ __global__ void patternBarching(const int* d_datainp, const int l, const int d) 
 			}
 			// END ham bestNeighbor
 		}
-
-		
+		printf("\n 4 \n");
+		//du lieu tra lai
+		printf("\n gan du lieu vao d_motif \n");
+		d_motif[index].dis = score_motif;
+		printf("\n d_ motif: dis = %d", d_motif[index].dis);
+		for (int i = 0; i < l; ++i) {
+			d_motif[index].motif[i] = motif_temp[i];
+		}
 
 		/*for (int k = 0; k <= d; k++)
 		{
@@ -271,19 +303,23 @@ __global__ void patternBarching(const int* d_datainp, const int l, const int d) 
 
 int main() {
 	File_Input();
-	cout << h_dataMotif[1];
-	//khai bao gpu
-	int* d_datainp;
-	if (cudaMalloc(&d_datainp, ARRAY_BYTES_INT) == cudaSuccess)
-		cout << "\n Khai bao thanh cong\n";
-	if (cudaMemcpy(d_datainp, h_dataMotif, ARRAY_BYTES_INT, cudaMemcpyHostToDevice) == cudaSuccess)
-		cout << "\n copy thanh cong\n";
-	ans_motif* d_motif;
-
+	//cout << h_dataMotif[1];	
+	if (cudaMalloc(&d_datainp, ARRAY_BYTES_INT) != cudaSuccess)
+		cout << "\n Khai bao ko thanh cong\n";
+	if (cudaMemcpy(d_datainp, h_dataMotif, ARRAY_BYTES_INT, cudaMemcpyHostToDevice) != cudaSuccess)
+		cout << "\n copy ko thanh cong\n";
+	
+	if (cudaMalloc(&d_motif, ARRAY_BYTES_MOTIF) != cudaSuccess) {
+		cout << "\n khai bao ko thanh cong d_motif\n";
+	}
 	//chay gpu
-	patternBarching << < 1, 1 >> > (d_datainp, l, d);
+	patternBarching <<< 1, 1 >>> (d_datainp, l, d, d_motif);
 	//cudaMemcpy(h_datainp, d_datainp, ARRAY_BYTES, cudaMemcpyDeviceToHost);
+	if (cudaMemcpy(h_motif, d_motif, ARRAY_BYTES_MOTIF, cudaMemcpyDeviceToHost) != cudaSuccess)
+		cout << "\n ko copy dc data sang host" << endl;
+	//cout << h_motif[0].dis << h_motif[0].motif[1];
 	cudaFree(d_datainp);
+	cudaFree(d_motif);
 
 	return 0;
 }
